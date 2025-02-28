@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"accountant/internal/server"
+	"act2/internal/server"
 )
 
 func gracefulShutdown(apiServer *http.Server, done chan bool) {

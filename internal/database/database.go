@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"time"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/joho/godotenv/autoload"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 // Service represents a service that interacts with a database.
@@ -29,7 +29,12 @@ type service struct {
 }
 
 var (
-	dburl      = os.Getenv("BLUEPRINT_DB_URL")
+	database   = os.Getenv("BLUEPRINT_DB_DATABASE")
+	password   = os.Getenv("BLUEPRINT_DB_PASSWORD")
+	username   = os.Getenv("BLUEPRINT_DB_USERNAME")
+	port       = os.Getenv("BLUEPRINT_DB_PORT")
+	host       = os.Getenv("BLUEPRINT_DB_HOST")
+	schema     = os.Getenv("BLUEPRINT_DB_SCHEMA")
 	dbInstance *service
 )
 
@@ -38,14 +43,11 @@ func New() Service {
 	if dbInstance != nil {
 		return dbInstance
 	}
-
-	db, err := sql.Open("sqlite3", dburl)
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable&search_path=%s", username, password, host, port, database, schema)
+	db, err := sql.Open("pgx", connStr)
 	if err != nil {
-		// This will not be a connection error, but a DSN parse error or
-		// another initialization error.
 		log.Fatal(err)
 	}
-
 	dbInstance = &service{
 		db: db,
 	}
@@ -108,6 +110,6 @@ func (s *service) Health() map[string]string {
 // If the connection is successfully closed, it returns nil.
 // If an error occurs while closing the connection, it returns the error.
 func (s *service) Close() error {
-	log.Printf("Disconnected from database: %s", dburl)
+	log.Printf("Disconnected from database: %s", database)
 	return s.db.Close()
 }
