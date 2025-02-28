@@ -1,4 +1,4 @@
-# Project accountant
+# Project act2
 
 One Paragraph of project description goes here
 
@@ -21,6 +21,20 @@ make build
 Run the application
 ```bash
 make run
+```
+Create DB container
+```bash
+make docker-run
+```
+
+Shutdown DB Container
+```bash
+make docker-down
+```
+
+DB Integrations Test:
+```bash
+make itest
 ```
 
 Live reload the application:
