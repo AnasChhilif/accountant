@@ -11,6 +11,7 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/mattn/go-sqlite3"
+	"accountant/internal/models"
 )
 
 // Service represents a service that interacts with a database.
@@ -22,6 +23,14 @@ type Service interface {
 	// Close terminates the database connection.
 	// It returns an error if the connection cannot be closed.
 	Close() error
+
+	// Transaction methods
+	InitTransactionTable() error
+	CreateTransaction(ctx context.Context, input models.TransactionInput) (*models.Transaction, error)
+	GetTransaction(ctx context.Context, id int64) (*models.Transaction, error)
+	UpdateTransaction(ctx context.Context, id int64, input models.TransactionInput) (*models.Transaction, error)
+	DeleteTransaction(ctx context.Context, id int64) error
+	ListTransactions(ctx context.Context, filters map[string]string) ([]*models.Transaction, error)
 }
 
 type service struct {

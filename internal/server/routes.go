@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"accountant/internal/handlers"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
@@ -17,6 +18,18 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.HandleFunc("/", s.HelloWorldHandler)
 
 	r.HandleFunc("/health", s.healthHandler)
+
+	api := r.PathPrefix("/api").Subrouter()
+	
+
+	// Transaction endpoints
+	transactionHandler := handlers.NewTransactionHandler(s.db)
+	api.HandleFunc("/transactions", transactionHandler.Create).Methods("POST")
+    api.HandleFunc("/transactions", transactionHandler.List).Methods("GET")
+    api.HandleFunc("/transactions/{id}", transactionHandler.Get).Methods("GET")
+    api.HandleFunc("/transactions/{id}", transactionHandler.Update).Methods("PUT")
+    api.HandleFunc("/transactions/{id}", transactionHandler.Delete).Methods("DELETE")
+
 
 	return r
 }
